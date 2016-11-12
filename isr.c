@@ -5,7 +5,7 @@ char *exception_messages[];
 void* isr_routines[32];
 void isr_handler(struct Registers* regs)
 {
-	if (regs->int_no < 32)
+    if (regs->int_no < 32)
     {
         void (*handler)(struct Registers* regs);
         handler = isr_routines[regs->int_no];

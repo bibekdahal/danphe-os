@@ -1,4 +1,4 @@
-CFILES := kernel.c stdio.c memory.c gdt.c idt.c irq.c isr.c
+CFILES := kernel.c system.c stdio.c string.c gdt.c idt.c irq.c isr.c memory_physical.c memory_virtual.c memory.c
 ASMFILES := loader.s libasm.s
 
 COBJS := $(CFILES:%.c=%.o)

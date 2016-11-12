@@ -2,7 +2,8 @@
 
 // Some useful constants
 
-static uint16_t* const frame_buffer = (uint16_t*) 0x000B8000;
+// Virtual address of the frame buffer
+static uint16_t* const frame_buffer = (uint16_t*) (0x000B8000 + VIRTUAL_KERNEL_BASE);
 
 static const size_t VGA_WIDTH = 80;
 static const size_t VGA_HEIGHT = 25;
@@ -96,32 +97,3 @@ void puts(char* const str) {
     }
 }
 
-
-char* itoa(int value, char* str, int base) {
-    if (base < 2 || base > 36) {
-        *str = '\0';
-        return str;
-    }
-
-    char* ptr = str;
-
-    // Negative sign for negative decimals
-    if (value < 0 && base == 10)
-        *ptr++ = '-';
-
-    char* tptr = ptr;
-    do {
-        *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz"[35 + value % base];
-        value /= base;
-    } while (value);
-
-    *ptr-- = '\0';
-
-    // Invert the digits
-    while (tptr < ptr) {
-        char temp = *tptr;
-        *tptr++ = *ptr;
-        *ptr-- = temp;
-    }
-    return str;
-}

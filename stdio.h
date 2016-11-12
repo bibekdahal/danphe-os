@@ -2,6 +2,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#define VIRTUAL_KERNEL_BASE 0xC0000000
+
+
 enum VgaColor {
     VGA_COLOR_BLACK = 0,
     VGA_COLOR_BLUE = 1,
@@ -27,6 +30,3 @@ void cls();
 
 void putch(char ch);
 void puts(char* str);
-
-
-char* itoa(int value, char* str, int base);

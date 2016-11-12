@@ -1,27 +1,25 @@
 ENTRY(loader)                /* the name of the entry label */
 
 SECTIONS {
-    . = 1M;                  /* the code should be loaded at 1 MB */
+    . = 0xC0100000;                  /* the code should be loaded at 3GB + 1 MB */
 
-    .text ALIGN(4K):
+    .text : AT(ADDR(.text) - 0xC0000000)
     {
         *(.multiboot)
         *(.text)
+        *(.rodata*)
     }
 
-    .rodata ALIGN(4K):
-    {
-        *(.rodata)
-    }
-
-    .data ALIGN(4K):
+    .data ALIGN (0x1000) : AT(ADDR(.data) - 0xC0000000)
     {
         *(.data)
     }
 
-    .bss ALIGN(4K):
+    .bss : AT(ADDR(.bss) - 0xC0000000)
     {
         *(COMMON)
         *(.bss)
     }
+    kernel_virt_end_var = .;
+    kernel_phys_end_var = (. - 0xC0000000);
 }

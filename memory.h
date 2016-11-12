@@ -1,15 +1,24 @@
 #pragma once
+#include "stdio.h"
+#include "multiboot.h"
 
-struct Registers {
-	unsigned int gs, fs, es, ds;
-	unsigned int edi, esi, ebp, esp, ebx, edx, ecx, eax;
-	unsigned int int_no, err_code;
-	unsigned int eip, cs, eflags, useresp, ss;
-} __attribute__((packed));
 
-void *memcpy(void *dest, const void *src, unsigned int count);
-void *memset(void *dest, char val, unsigned int count);
+void init_memory(multiboot_info_t* mbt);
 
-unsigned short *memsetw(unsigned short *dest, unsigned short val,
-	unsigned int count);
-unsigned int strlen(const char *str);
+// Physical memory management
+
+void pm_init(uint32_t mem_size_in_kb, uint32_t * bitmap_storage_address);
+
+void pm_init_region(uint32_t base_address, uint32_t size);
+
+void pm_deinit_region(uint32_t base_address, uint32_t size);
+
+void* pm_alloc_frame();
+
+void pm_free_frame(void* address);
+
+// Virtual memory management
+
+void setup_kernel_page_dir();
+int map_page(void* physical_address, void* virtual_address);
+void unmap_page(void* virtual_address);

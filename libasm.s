@@ -1,3 +1,4 @@
+
 ; GDT
 
 global load_gdt
