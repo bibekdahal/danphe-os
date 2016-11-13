@@ -1,7 +1,7 @@
 #pragma once
-#include <stdio.h>
 #include <multiboot.h>
-#include <alloc.h>
+#include <memory/string.h>
+#include <memory/alloc.h>
 
 
 void init_memory(multiboot_info_t* mbt);

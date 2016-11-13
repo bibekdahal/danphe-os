@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <system/system.h>
 
 // Some useful constants
 
@@ -26,6 +26,15 @@ static inline uint16_t get_vga_entry(char ch, uint8_t color) {
     return (uint16_t)ch | (uint16_t) color << 8;
 }
 
+// Move cursor to given position
+static inline void update_cursor() {
+    unsigned short position = cursor_pos_y*80 + cursor_pos_x;
+    outportb(0x3D4, 0x0F);
+    outportb(0x3D5, (unsigned char)(position & 0xFF));
+    outportb(0x3D4, 0x0E);
+    outportb(0x3D5, (unsigned char)((position >> 8) & 0xFF));
+}
+
 // Move cursor by 'n' position forward
 static inline void move_cursor(size_t n) {
     cursor_pos_x += n;
@@ -36,6 +45,7 @@ static inline void move_cursor(size_t n) {
             scroll(cursor_pos_y - VGA_HEIGHT + 1);
         }
     }
+    update_cursor();
 }
 
 static inline void new_line() {
@@ -44,6 +54,7 @@ static inline void new_line() {
     if (cursor_pos_y >= VGA_HEIGHT) {
         scroll(cursor_pos_y - VGA_HEIGHT + 1);
     }
+    update_cursor();
 }
 
 
@@ -62,6 +73,7 @@ void scroll(unsigned int n) {
     }
     if (n < cursor_pos_y)
         cursor_pos_y -= n;
+    update_cursor();
 }
 
 void cls() {
@@ -72,18 +84,46 @@ void cls() {
     }
     cursor_pos_x = 0;
     cursor_pos_y = 0;
+    update_cursor();
 }
 
 void putch(char ch) {
     switch (ch) {
+    // Tab
     case '\t':
         for (size_t i=0; i<4; ++i)
             putch(' ');
         break;
+    // New line
     case '\n':
         new_line();
         break;
+    // Carriage return: return to beginning of line
+    case '\r':
+        cursor_pos_x = 0;
+        break;
+    // Backspace
+    case '\b':
+
+        // Move back one character
+        if (cursor_pos_x == 0) {
+            if (cursor_pos_y == 0) {
+                return;
+            }
+            cursor_pos_x = VGA_WIDTH - 1;
+            cursor_pos_y--;
+        } else {
+            cursor_pos_x--;
+        }
+
+        // Draw an empty space there
+        frame_buffer[cursor_pos_y*VGA_WIDTH+cursor_pos_x] = get_vga_entry(
+            ' ', active_color);
+        update_cursor();
+        break;
+
     default:
+        // Just show the printable characters
         frame_buffer[cursor_pos_y*VGA_WIDTH+cursor_pos_x] = get_vga_entry(
             ch, active_color);
         move_cursor(1);
@@ -110,3 +150,43 @@ void putint(int num) {
     puts(itoa(num, temp, 10));
 }
 
+
+uint8_t keys[128];
+uint8_t caps_on = 0;
+uint8_t print_key_input(uint8_t code, uint8_t down) {
+
+    // Get the character
+    if(code >= sizeof(us_map))
+        return 0;
+
+    uint8_t key = us_map[code];
+    uint8_t shift_key = us_shift_map[code];
+
+    // Set key state
+    keys[key] = down;
+
+    // Print the printable characters
+    if (down) {
+        if (key < NON_PRINTABLE_KEY) {
+
+            // Check if we need to print the SHIFT character
+            uint8_t shift = 0;
+
+            if (caps_on && key >= 97 && key <= 122) {
+                shift = 1;
+            }
+            
+            if (keys[KEY_LSHIFT] || keys[KEY_RSHIFT])
+                shift = 1-shift;
+            
+            uint8_t ch = shift ? shift_key : key; 
+            putch(ch);
+            return ch;
+        }
+        else if (key == KEY_CAPS_LOCK)
+            caps_on = 1 - caps_on;
+        return key;
+    }
+
+    return 0;
+}

@@ -1,6 +1,7 @@
 #pragma once
 #include <stddef.h>
 #include <stdint.h>
+#include <system/keyboard.h>
 
 #define VIRTUAL_KERNEL_BASE 0xC0000000
 
@@ -34,3 +35,5 @@ void puts(char* str);
 void puthex(uint32_t num);
 void putdec(uint32_t num);
 void putint(int num);
+
+uint8_t print_key_input(uint8_t code, uint8_t down);

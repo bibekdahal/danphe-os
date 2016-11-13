@@ -1,4 +1,5 @@
 #pragma once
+#include <system/stdio.h>
 
 /*
     For each page directory, we maintain a Memory struct.

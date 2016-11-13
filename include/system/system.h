@@ -1,7 +1,6 @@
 #pragma once
-#include <stdio.h>
-#include <string.h>
-#include <memory.h>
+#include <memory/string.h>
+#include <memory/memory.h>
 
 unsigned char inportb (unsigned short _port);
 void outportb (unsigned short _port, unsigned char _data);

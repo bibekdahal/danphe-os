@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <system/stdio.h>
 
 struct GdtDescriptor {
     uint16_t limit_low;

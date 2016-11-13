@@ -1,4 +1,4 @@
-#include <memory.h>
+#include <memory/memory.h>
 
 
 void kernel_phys_end_var();

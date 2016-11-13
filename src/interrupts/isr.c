@@ -1,4 +1,4 @@
-#include <system.h>
+#include <system/system.h>
 
 char *exception_messages[];
 
@@ -11,8 +11,7 @@ void isr_handler(struct Registers* regs)
         handler = isr_routines[regs->int_no];
         if (handler)
             handler(regs);
-        else
-        {
+        else {
             puts(" Exception Occurred:\n\t");
             puts(exception_messages[regs->int_no]);
             puts("\n\n");

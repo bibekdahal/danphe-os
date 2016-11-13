@@ -1,5 +1,5 @@
 
-SRC_DIRS := descriptors interrupts memory asm
+SRC_DIRS := descriptors interrupts memory asm system
 CFILES := $(wildcard $(SRC_DIRS:%=src/%/*.c)) $(wildcard src/*.c)
 ASMFILES := $(wildcard src/asm/*.s)
 INCLUDE_DIR := include
@@ -41,7 +41,7 @@ clean:
 	rm obj/ -rf
 
 run:
-	qemu-system-i386 -cdrom bin/danphe.iso
+	qemu-system-i386 -cdrom bin/danphe.iso -k en-us
 
 
 ## Include auto-generated dependencies rules

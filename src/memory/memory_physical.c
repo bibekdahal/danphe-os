@@ -1,5 +1,4 @@
-#include <string.h>
-#include <memory.h>
+#include <memory/memory.h>
 
 /* Simple physical memory management with bitmaps */
 

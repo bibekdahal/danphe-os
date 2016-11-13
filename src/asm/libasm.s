@@ -158,5 +158,5 @@ irq_common:
     pop ds
     popa
     add esp, 8
-    iret        
+    iret
 

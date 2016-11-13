@@ -1,4 +1,4 @@
-#include <system.h>
+#include <system/system.h>
 
 struct IdtDescriptor 
 {
@@ -37,11 +37,14 @@ void install_irqs();
 void install_idt()
 {
     idt_ptr.limit = sizeof(struct IdtDescriptor) * 256 - 1;
-    idt_ptr.base = (uint32_t)&idt_descriptors;
+    idt_ptr.base = (uint32_t)&idt_descriptors[0];
 
 	memset((char*)&idt_descriptors, 0, sizeof(struct IdtDescriptor) * 256);
-	
+
     install_isrs();
 	install_irqs();
 	idt_load();
+
+    // Enable the irqs
+	asm volatile("sti");
 }

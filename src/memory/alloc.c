@@ -1,4 +1,4 @@
-#include <memory.h>
+#include <memory/memory.h>
 
 // First a simple page bitmap handler
 static inline void set_page(uint32_t page_index) {
@@ -153,8 +153,8 @@ void* malloc(uint32_t size) {
         return 0;
 
     // Now an infinite loop to search for an appropriate free block
+    struct MemoryBlockHeader* block = active_memory.first_block;
     while (1) {
-        struct MemoryBlockHeader* block = active_memory.first_block;
         if (block == 0) {
             break;
         }
@@ -172,7 +172,7 @@ void* malloc(uint32_t size) {
             }
 
             // Return the allocated block
-            return block;
+            return (void*)((uint32_t)block + sizeof(struct MemoryBlockHeader));
         }
         else {
             block = next_block(block);
@@ -185,7 +185,7 @@ void* malloc(uint32_t size) {
 
 // Free the allocated memory
 uint32_t free(void* address) {
-    struct MemoryBlockHeader* block = (struct MemoryBlockHeader*)address;
+    struct MemoryBlockHeader* block = (struct MemoryBlockHeader*)((uint32_t)address - sizeof(struct MemoryBlockHeader));
     if (block->magic != ALLOC_BLOCK) {
         return 0;
     }
