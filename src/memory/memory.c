@@ -1,4 +1,4 @@
-#include "memory.h"
+#include <memory.h>
 
 
 void kernel_phys_end_var();
@@ -33,4 +33,18 @@ void init_memory(multiboot_info_t* mbt) {
     // Next (re)setup kernel page directory
 
     setup_kernel_page_dir();
+
+    // Initialize allocation system, including marking free and available pages
+
+    // First free all pages
+    memset(&active_memory.pages[0], 0, 1024*1024/8);
+    // For kernel we will only be using higher half memory
+    // So reserve all pages up to the one where kernel is currently at
+    memset(&active_memory.pages[0], 0xFF, (VIRTUAL_KERNEL_BASE/4096+1024)/8);
+    // Last page table, used for recursive page directory
+    memset(&active_memory.pages[(1024*1024-1024)/32], 0xFF, 1024/8);
+
+    // Now initialize the block list in the memory
+    active_memory.first_block = 0;
+    malloc(0);          // To create the first free block
 }

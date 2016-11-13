@@ -1,4 +1,4 @@
-#include "system.h"
+#include <system.h>
 
 void *irq_routines[16];
 

@@ -1,4 +1,4 @@
-#include "memory.h"
+#include <memory.h>
 
 /* Virtual memory management */
 
@@ -126,8 +126,13 @@ void unmap_page(void* virtual_address) {
 // Although a simple page directory was installed during booting
 // we do it again, so that we have more control from C code
 
+// It should be noted that for now, we only allocate one page table (4MB)
+// for kernel space, which means we can only use up to 4MB until we start
+// using memory allocation system later.
+
 // Set up a new page directory for the kernel
 void setup_kernel_page_dir() {
+
     uint32_t dir_phys = (uint32_t)pm_alloc_frame();
     uint32_t table_phys = (uint32_t)pm_alloc_frame();
 

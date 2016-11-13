@@ -1,4 +1,4 @@
-#include "system.h"
+#include <system.h>
 
 
 void kernel_main(multiboot_info_t* mbt) {

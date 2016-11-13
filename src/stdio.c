@@ -1,4 +1,4 @@
-#include "stdio.h"
+#include <stdio.h>
 
 // Some useful constants
 
@@ -95,5 +95,18 @@ void puts(char* const str) {
     while (*temp != '\0') {
         putch(*temp++);
     }
+}
+
+void puthex(uint32_t num) {
+    char temp[100];
+    puts(utoa(num, temp, 16));
+}
+void putdec(uint32_t num) {
+    char temp[100];
+    puts(utoa(num, temp, 10));
+}
+void putint(int num) {
+    char temp[100];
+    puts(itoa(num, temp, 10));
 }
 

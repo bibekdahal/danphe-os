@@ -1,10 +1,13 @@
-CFILES := kernel.c system.c stdio.c string.c gdt.c idt.c irq.c isr.c memory_physical.c memory_virtual.c memory.c
-ASMFILES := loader.s libasm.s
 
-COBJS := $(CFILES:%.c=%.o)
-ASMOBJS := $(ASMFILES:%.s=%.o)
+SRC_DIRS := descriptors interrupts memory asm
+CFILES := $(wildcard $(SRC_DIRS:%=src/%/*.c)) $(wildcard src/*.c)
+ASMFILES := $(wildcard src/asm/*.s)
+INCLUDE_DIR := include
 
-CFLAGS := -m32 -ffreestanding -MMD -Wall -Wextra -c
+COBJS := $(CFILES:src/%.c=%.o)
+ASMOBJS := $(ASMFILES:src/%.s=%.o)
+
+CFLAGS := -I $(INCLUDE_DIR) -m32 -ffreestanding -MMD -Wall -Wextra -c
 LDFlAGS := -T link.ld -melf_i386
 ASMFLAGS := -felf32
 
@@ -24,13 +27,13 @@ bin/kernel.elf: $(OBJS) bin
 bin:
 	mkdir bin
 
-obj/%.o: %.c | obj
+obj/%.o: src/%.c | obj
 	$(CC) $(CFLAGS) $< -o $@
 
 obj:
-	mkdir obj
+	mkdir obj $(SRC_DIRS:%=obj/%)
 
-obj/%.o: %.s | obj
+obj/%.o: src/%.s | obj
 	nasm $(ASMFLAGS) $^ -o $@
 
 clean:

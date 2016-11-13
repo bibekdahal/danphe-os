@@ -30,3 +30,7 @@ void cls();
 
 void putch(char ch);
 void puts(char* str);
+
+void puthex(uint32_t num);
+void putdec(uint32_t num);
+void putint(int num);

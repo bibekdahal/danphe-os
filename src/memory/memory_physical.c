@@ -1,5 +1,5 @@
-#include "string.h"
-#include "memory.h"
+#include <string.h>
+#include <memory.h>
 
 /* Simple physical memory management with bitmaps */
 
@@ -10,15 +10,15 @@ static uint32_t used_frames;
 static uint32_t * frames;
 
 static inline void set_frame(uint32_t bit) {
-    frames[bit/32] |= (1 << (bit%32));
+    frames[bit/32] |= (1 << (bit % 32));
 }
 
 static inline void unset_frame(uint32_t bit) {
-    frames[bit/32] &= ~(1 << (bit%32));
+    frames[bit/32] &= ~(1 << (bit % 32));
 }
 
 static inline int test_frame(uint32_t bit) {
-    return frames[bit/32] & (1 << (bit%32));
+    return frames[bit/32] & (1 << (bit % 32));
 }
 
 static int get_first_free_frame() {
