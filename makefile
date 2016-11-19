@@ -41,7 +41,7 @@ clean:
 	rm obj/ -rf
 
 run:
-	qemu-system-i386 -cdrom bin/danphe.iso -k en-us
+	qemu-system-i386 -cdrom bin/danphe.iso -k en-us -usb -device usb-ehci
 
 
 ## Include auto-generated dependencies rules

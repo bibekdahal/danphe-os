@@ -40,11 +40,16 @@ void init_memory(multiboot_info_t* mbt) {
     memset(&active_memory.pages[0], 0, 1024*1024/8);
     // For kernel we will only be using higher half memory
     // So reserve all pages up to the one where kernel is currently at
-    memset(&active_memory.pages[0], 0xFF, (VIRTUAL_KERNEL_BASE/4096+1024)/8);
+    memset(&active_memory.pages[0], 0xFF, ((VIRTUAL_KERNEL_BASE >> 22)*1024 + 1024)/8);
     // Last page table, used for recursive page directory
-    memset(&active_memory.pages[(1024*1024-1024)/32], 0xFF, 1024/8);
+    memset(&active_memory.pages[(1023*1024)/8], 0xFF, 1024/8);
 
     // Now initialize the block list in the memory
     active_memory.first_block = 0;
     malloc(0);          // To create the first free block
+
+    puts("\n");
+    puts("Kernel end location: 0x"); puthex(kernel_virt_end); puts("\n");
+    puts("Kernel size: "); putdec((kernel_virt_end - VIRTUAL_KERNEL_BASE)/1024); puts(" KB\n");
+    puts("\n");
 }

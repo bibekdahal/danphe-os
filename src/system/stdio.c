@@ -28,11 +28,11 @@ static inline uint16_t get_vga_entry(char ch, uint8_t color) {
 
 // Move cursor to given position
 static inline void update_cursor() {
-    unsigned short position = cursor_pos_y*80 + cursor_pos_x;
-    outportb(0x3D4, 0x0F);
-    outportb(0x3D5, (unsigned char)(position & 0xFF));
-    outportb(0x3D4, 0x0E);
-    outportb(0x3D5, (unsigned char)((position >> 8) & 0xFF));
+    uint16_t position = cursor_pos_y*80 + cursor_pos_x;
+    outb(0x3D4, 0x0F);
+    outb(0x3D5, (uint8_t)(position & 0xFF));
+    outb(0x3D4, 0x0E);
+    outb(0x3D5, (uint8_t)((position >> 8) & 0xFF));
 }
 
 // Move cursor by 'n' position forward

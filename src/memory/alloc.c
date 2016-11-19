@@ -29,15 +29,6 @@ static int get_first_free_page() {
 }
 
 // Finally a page allocation function
-/*
-    new_page():
-        i = get first free page
-        phys = alloc physical
-        virt = i * 4096
-        map(phys, virt)
-        return virt
-*/      
-
 void* allocate_new_page() {
     int i = get_first_free_page();
     if (i < 0)

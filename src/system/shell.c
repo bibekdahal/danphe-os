@@ -3,10 +3,9 @@
 #define MAX_INPUT_LENGTH 256
 #define MAX_COMMAND_LENGTH 20
 
-
+int input_offset;
 uint8_t taking_input;
-uint8_t input_offset;
-uint8_t input[MAX_INPUT_LENGTH];
+uint8_t* input = 0;
 
 // Commands
 char commands[][MAX_COMMAND_LENGTH] = {
@@ -16,7 +15,7 @@ extern void (*command_handlers[])(char** argv, int argc);
 
 void process_command(char* command) {
     int argc = 0;
-    uint32_t i = 0; uint32_t new_word = 1;
+    int i = 0; uint32_t new_word = 1;
 
     // Get the count of arguments
     while (command[i] != '\0') {
@@ -80,6 +79,8 @@ void process_command(char* command) {
 
 
 void init_shell() {
+    if (!input)
+        input = (uint8_t*)malloc(MAX_INPUT_LENGTH);
     taking_input = 0;
     puts("shell $ ");
     input_offset = 0;
@@ -88,12 +89,14 @@ void init_shell() {
 
 
 void shell_handle_input(uint8_t code, uint8_t down) {
+    if (!input)
+        return;
+
     // Don't let erase more than that was typed
     if (down && us_map[code] == '\b') {
-        if (input_offset == 0)
+        if (input_offset <= 0)
             return;
-        else
-            input_offset--;
+        input_offset -= 2;  // One to erase, and another to counteract a ++ below.            
     }
 
     // Print the character

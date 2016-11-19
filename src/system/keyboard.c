@@ -45,7 +45,7 @@ void kbd_handler() {
 
     // Get the key code
     uint8_t code, down;
-	code = inportb(0x60);
+	code = inb(0x60);
 
     // Check if it was a UP or DOWN event
     if(code >= 0x80) {
