@@ -30,16 +30,18 @@ void process_command(char* command) {
         i++;
     }
 
-    if (argc == 0)
+    if (argc == 0) {
         return;
+    }
 
     char** argv = (char**)malloc(argc * sizeof(char*));
 
     // Get the arguments
     char* temp = command;
     for (i=0; i<argc; ++i) {
-        while (*temp == ' ')
+        while (*temp == ' ') {
             temp++;
+        }
         
         int len = 0;
         while (temp[len] != ' ' && temp[len] != '\0') {

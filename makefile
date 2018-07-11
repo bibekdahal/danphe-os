@@ -7,7 +7,7 @@ INCLUDE_DIR := include
 COBJS := $(CFILES:src/%.c=%.o)
 ASMOBJS := $(ASMFILES:src/%.s=%.o)
 
-CFLAGS := -I $(INCLUDE_DIR) -m32 -ffreestanding -MMD -Wall -Wextra -c
+CFLAGS := -I $(INCLUDE_DIR) -m32 -ffreestanding -MMD -Wall -Wextra -c -fno-stack-protector
 LDFlAGS := -T link.ld -melf_i386
 ASMFLAGS := -felf32
 
@@ -16,7 +16,7 @@ OBJS := $(addprefix obj/,$(ASMOBJS) $(COBJS))
 all: bin/danphe.iso
 
 bin/danphe.iso: iso/boot/kernel.elf
-	grub-mkrescue iso/ -o bin/danphe.iso
+	grub-mkrescue -o bin/danphe.iso iso
 
 iso/boot/kernel.elf: bin/kernel.elf
 	cp bin/kernel.elf iso/boot/
