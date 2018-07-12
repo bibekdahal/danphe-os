@@ -44,6 +44,23 @@ void* allocate_new_page() {
 
     return 0;
 }
+
+void* allocate_for_physical_addr(void* phys) {
+    int i = get_first_free_page();
+    if (i < 0) {
+        return 0;
+    }
+
+    // WARNING This doesn't check if the frame was already taken.
+    pm_deinit_region((uint32_t)phys, 4096); // 1 frame
+    void* virt = (void*)(i * 4096);
+    if (map_page(phys, virt)) {
+        set_page(i);
+        return virt;
+    }
+
+    return 0;
+}
  
 
 // Now the actual allocation, deallocation system.
@@ -114,7 +131,7 @@ static struct MemoryBlockHeader* new_free_block(void* address, uint32_t block_si
 }
 
 
-// Get next block fater given block, creating new one, if it doesn't exist
+// Get next block after given block, creating new one, if it doesn't exist
 static struct MemoryBlockHeader* next_block(struct MemoryBlockHeader* block) {
     if (block->next)
         return block->next;

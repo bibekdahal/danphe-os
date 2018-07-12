@@ -1,5 +1,5 @@
 
-SRC_DIRS := descriptors interrupts memory asm system
+SRC_DIRS := descriptors interrupts memory asm system device tools
 CFILES := $(wildcard $(SRC_DIRS:%=src/%/*.c)) $(wildcard src/*.c)
 ASMFILES := $(wildcard src/asm/*.s)
 INCLUDE_DIR := include

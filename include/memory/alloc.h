@@ -30,3 +30,6 @@ extern struct Memory active_memory;
 
 void* malloc(uint32_t size);
 uint32_t free(void* address);
+
+void* allocate_new_page();
+void* allocate_for_physical_addr(void* phys);

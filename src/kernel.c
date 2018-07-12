@@ -1,6 +1,6 @@
 #include <system/system.h>
-#include <system/shell.h>
-#include <system/pci.h>
+#include <device/usb.h>
+#include <tools/shell.h>
 
 
 void key_listener(uint8_t code, uint8_t down) {
@@ -20,8 +20,10 @@ void kernel_main(multiboot_info_t* mbt) {
     puts("Setting up paging and memory management...\n");
     init_memory(mbt);
 
-    puts("Initialising PCI drivers...\n");
-    init_pci();
+    // FIXME If we don't print this string, we are out of memory
+    // something goes wrong when linking.
+    puts("Initialising different drivers...\n");
+    init_usb();
 
     puts("\n\n");
     puts("Welcome to Danphe OS!\n\n");

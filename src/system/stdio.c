@@ -151,7 +151,7 @@ void putint(int num) {
 }
 
 
-uint8_t keys[128];
+uint8_t keys[256];
 uint8_t caps_on = 0;
 uint8_t print_key_input(uint8_t code, uint8_t down) {
 
@@ -176,8 +176,9 @@ uint8_t print_key_input(uint8_t code, uint8_t down) {
                 shift = 1;
             }
             
-            if (keys[KEY_LSHIFT] || keys[KEY_RSHIFT])
+            if (keys[KEY_LSHIFT] || keys[KEY_RSHIFT]) {
                 shift = 1-shift;
+            }
             
             uint8_t ch = shift ? shift_key : key; 
             putch(ch);

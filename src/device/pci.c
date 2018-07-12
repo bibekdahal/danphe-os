@@ -1,25 +1,47 @@
-#include <system/pci.h>
+#include <device/pci.h>
 
 
-static uint16_t pci_read_word (uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset) {
+const uint16_t ADDR_PORT = 0xCF8;
+const uint16_t DATA_PORT = 0xCFC;
 
-    uint32_t address;
-    uint32_t lbus  = (uint32_t)bus;
-    uint32_t lslot = (uint32_t)slot;
-    uint32_t lfunc = (uint32_t)func;
-    uint16_t tmp = 0;
- 
-    // create configuration address
-    address = (uint32_t)((lbus << 16) | (lslot << 11) |
-              (lfunc << 8) | (offset & 0xfc) | ((uint32_t)0x80000000));
- 
-    // write out the address
-    outl(0xCF8, address);
+// A device is addressed using bus, slot and func and
+// for each device, 256 bytes of configuration space is available.
 
-    // read in the data
-    // (offset & 2) * 8) = 0 will choose the first word of the 32 bits register
-    tmp = (uint16_t)((inl(0xCFC) >> ((offset & 2) * 8)) & 0xffff);
-    return (tmp);
+// The first 6 bits of the offset is used while calculating the address
+// to read 4 bytes among this 256 bytes.
+
+uint32_t pci_read(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset) {
+    // Create configuration address
+    uint32_t address = (((uint32_t)bus) << 16) | (((uint32_t)slot) << 11) |
+              (((uint32_t)func) << 8) | (offset & 0xfc) | ((uint32_t)0x80000000);
+
+    // Write out the address
+    outl(ADDR_PORT, address);
+
+    // Read in the data
+    return inl(DATA_PORT);
+}
+
+void pci_write(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset, uint32_t data) {
+    // Create configuration address
+    uint32_t address = (((uint32_t)bus) << 16) | (((uint32_t)slot) << 11) |
+              (((uint32_t)func) << 8) | (offset & 0xfc) | ((uint32_t)0x80000000);
+
+    // Write out the address
+    outl(ADDR_PORT, address);
+
+    // Write out the data
+    outl(DATA_PORT, data);
+}
+
+uint16_t pci_read_word(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset) {
+    uint32_t tmp = pci_read(bus, slot, func, offset);
+
+    // Basically we are only interested in the last two bits of `offset`
+    // which determines which two of the four bytes to take.
+    // 00 and 01: the last two bytes
+    // 10 and 11: the first two bytes
+    return (uint16_t)((tmp >> ((offset & 2) * 8)) & 0xffff);
 }
 
 
@@ -77,7 +99,7 @@ struct pci_device find_pci_device(uint16_t class, uint16_t subclass, uint16_t in
     return pdevice;
 }
 
- void init_pci() {
+void init_pci() {
     // for(uint32_t bus = 0; bus < 256; bus++) {
     //     for(uint32_t slot = 0; slot < 32; slot++) {
     //         for(uint32_t function = 0; function < 8; function++) {

@@ -1,7 +1,7 @@
 #pragma once
 #include <stddef.h>
 #include <stdint.h>
-#include <system/keyboard.h>
+#include <device/keyboard.h>
 
 #define VIRTUAL_KERNEL_BASE 0xC0000000
 

@@ -62,7 +62,6 @@ void* get_physical_addr(void* virtual_address) {
 // Return 0 if the virtual address is already taken or page table cannot be created
 // and 1 if success
 int map_page(void* physical_address, void* virtual_address) {
-
     uint32_t pd_index = (uint32_t)virtual_address >> 22;
     uint32_t pt_index = (uint32_t)virtual_address >> 12 & 0x03FF;
 
@@ -71,8 +70,9 @@ int map_page(void* physical_address, void* virtual_address) {
 
     if (page_dir[pd_index] & 1) {
         // PDE exists
-        if (ptable[pt_index] & 1)
+        if (ptable[pt_index] & 1) {
             return 0;
+        }
 
         // Map
         ptable[pt_index] = (uint32_t)physical_address | 3;
@@ -84,10 +84,18 @@ int map_page(void* physical_address, void* virtual_address) {
     
     // First get physical memory to put the table
     uint32_t ptable_phys = (uint32_t)pm_alloc_frame();
-    if (!ptable_phys)
+    if (!ptable_phys) {
         return 0;
+    }
+
     // Then set the PDE and PTE respectively
     page_dir[pd_index] = ptable_phys | 3;
+
+    // Empty the new page table
+    for (int i=0; i<1024; ++i) {
+        ptable[i] = 2;
+    }
+    // Then set the page at given index
     ptable[pt_index] = (uint32_t)physical_address | 3;
     flush_tlb(virtual_address);
     return 1;
