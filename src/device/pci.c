@@ -99,7 +99,42 @@ struct pci_device find_pci_device(uint16_t class, uint16_t subclass, uint16_t in
     return pdevice;
 }
 
-void init_pci() {
+struct pci_bar get_pci_bar(struct pci_device device, int index) {
+    // Get address and size of BAR
+    uint32_t offset = 0x10 + index * 4;
+    uint32_t address = read_pci_device(device, offset);
+
+    write_pci_device(device, offset, 0xffffffff);
+    uint32_t mask = read_pci_device(device, offset);
+    write_pci_device(device, offset, address);
+
+    struct pci_bar bar;
+
+    if (address & 0x01) {
+        bar.addr.port = (uint16_t)(address & ~0x3);
+        bar.size = (uint16_t)(~(mask & ~0x3) + 1);
+    }
+    else if (address & 0x04) {
+        // Ours is 32 bit system and doesn't support 64bit address space
+        // uint32_t offset_high = 0x10 + (index + 1) * 4;
+        // uint32_t address_high = read_pci_device(device, offset_high);
+
+        // write_pci_device(device, offset_high, 0xffffffff);
+        // uint32_t mask_high = read_pci_device(device, offset_high);
+        // write_pci_device(device, offset_high, address_high);
+
+        // bar.addr.address = (void*)(((uint64_t)address_high << 32) | (address & ~0xf));
+        // bar.size = ~(((uint64_t)mask_high << 32) | (mask & ~0xf)) + 1;
+    }
+    else {
+        bar.addr.address = (void*)(address & ~0xf);
+        bar.size = ~(mask & ~0xf) + 1;
+    }
+
+    return bar;
+}
+
+// void init_pci() {
     // for(uint32_t bus = 0; bus < 256; bus++) {
     //     for(uint32_t slot = 0; slot < 32; slot++) {
     //         for(uint32_t function = 0; function < 8; function++) {
@@ -119,4 +154,4 @@ void init_pci() {
     //         }
     //     }
     // }
-}
+// }
