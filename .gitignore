@@ -1,2 +1,3 @@
 bin/
 obj/
+iso/boot/kernel.elf
